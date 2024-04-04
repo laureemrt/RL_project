@@ -1,0 +1,20 @@
+{
+    "observation": {
+        "type": "TimeToCollision"
+    },
+    "action": {
+        "type": "DiscreteMetaAction"
+    },
+    "incoming_vehicle_destination": null,
+    "duration": 11, 
+    "simulation_frequency": 15,
+    "policy_frequency": 1,
+    "other_vehicles_type": "highway_env.vehicle.behavior.IDMVehicle",
+    "screen_width": 600, 
+    "screen_height": 600, 
+    "centering_position": [0.5, 0.6],  
+    "scaling": 5.5,
+    "show_trajectories": false,
+    "render_agent": true,
+    "offscreen_rendering": false
+}
