@@ -39,11 +39,8 @@ class Net(nn.Module):
             nn.Linear(hidden_size, n_actions),
         )
 
-        q_net = create_mlp(self.features_dim, action_dim, self.net_arch, self.activation_fn)
-        self.q_net = nn.Sequential(*q_net)
-
     def forward(self, x):
-        return self.net(x)
+        return self.net(x.view(x.shape[0],-1))
 
 
 class DQN:
@@ -120,7 +117,7 @@ class DQN:
             ).max(1)[0]
             targets = next_state_values * self.gamma + reward_batch
 
-        loss = self.loss_function(values, targets.unsqueeze(1))
+        loss = self.loss_function(values, targets.unsqueeze(1).float())
 
         # Optimize the model
         self.optimizer.zero_grad()
@@ -159,8 +156,8 @@ class DQN:
     def reset(self):
         hidden_size = 128
 
-        obs_size = self.observation_space.shape[0]
-        n_actions = self.action_space.n
+        obs_size = self.observation_space.shape[0] * self.observation_space.shape[1] * self.observation_space.shape[2]
+        n_actions = 9
 
         self.buffer = ReplayBuffer(self.buffer_capacity)
         self.q_net = Net(obs_size, hidden_size, n_actions)

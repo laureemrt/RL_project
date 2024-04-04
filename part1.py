@@ -3,18 +3,18 @@ import numpy as np
 import gymnasium as gym
 
 import matplotlib.pyplot as plt
+import json
 
-from resources.config import (
-    config_highway
-)
+
 from dqn_utils import *
 
+with open('./resources/config_highway.json', 'r', encoding='utf-8') as json_file:
+    config_highway=json.load(json_file)
 
 if __name__ == "__main__":
     # Create the environment
     env = gym.make("highway-fast-v0", render_mode="rgb_array")
     env.unwrapped.configure(config_highway)
-    env.reset()
     obs, info = env.reset()
 
     action_space = env.action_space
@@ -46,7 +46,7 @@ if __name__ == "__main__":
     # Create the model
     model = DQN(*arguments)
 
-    N_episodes = 2000
+    N_episodes = 10000
 
     agent = DQN(*arguments)
 
