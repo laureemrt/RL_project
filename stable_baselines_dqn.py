@@ -2,7 +2,11 @@ import gymnasium as gym
 from gymnasium.wrappers import RecordVideo
 from stable_baselines3 import DQN
 
-TRAIN = False
+from tools.tools_constants import (
+    PATH_MODELS,
+    PATH_RESULTS,
+    TRAIN_MODE
+)
 
 if __name__ == "__main__":
     # Create the environment
@@ -23,19 +27,19 @@ if __name__ == "__main__":
         gradient_steps=1,
         target_update_interval=50,
         verbose=1,
-        tensorboard_log="highway_dqn/",
+        tensorboard_log=PATH_MODELS + "highway_dqn/",
     )
 
     # Train the model
-    if TRAIN:
+    if TRAIN_MODE:
         model.learn(total_timesteps=int(2e4))
-        model.save("highway_dqn/model")
+        model.save(PATH_MODELS + "highway_dqn/model")
         del model
 
     # Run the trained model and record video
-    model = DQN.load("highway_dqn/model", env=env)
+    model = DQN.load(PATH_MODELS + "highway_dqn/model", env=env)
     env = RecordVideo(
-        env, video_folder="highway_dqn/videos", episode_trigger=lambda e: True
+        env, video_folder=PATH_RESULTS + "highway_dqn/videos", episode_trigger=lambda e: True
     )
     env.unwrapped.set_record_video_wrapper(env)
     env.configure({"simulation_frequency": 50})  # Higher FPS for rendering

@@ -42,7 +42,7 @@ To start it, use the command on *Windows*:
 ```bash
 venv/Scripts/Activate.ps1
 ```
-
+git pu
 Or for *MacOS* and *Linux*:
 
 ```bash
