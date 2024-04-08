@@ -2,3 +2,4 @@ gymnasium
 highway-env
 moviepy
 stable_baselines3
+tensorboard

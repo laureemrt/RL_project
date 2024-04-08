@@ -17,8 +17,8 @@ from tools.tools_constants import (
 ### Main code ###
 #################
 
-highway = True
-racetrack = False
+highway = False
+racetrack = True
 roundabout = False
 
 if highway:
@@ -44,8 +44,8 @@ if roundabout:
     env.unwrapped.configure(DICT_CONFIGS["roundabout"])
     env.reset()
     for _ in range(100):
-        # action =  env.action_space.sample()
-        action = env.action_type.actions_indexes["IDLE"]
+        action =  env.action_space.sample()
+        # action = env.action_type.actions_indexes["IDLE"]
         obs, reward, done, truncated, info = env.step(action)
         env.render()
 
