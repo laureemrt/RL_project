@@ -24,5 +24,5 @@ PATH_CONFIGS = PATH_RESOURCES + "configs/"
 DICT_CONFIGS = {
     "highway": load_json_file(PATH_CONFIGS + "config_highway.json"),
     "racetrack": load_json_file(PATH_CONFIGS + "config_racetrack.json"),
-    "roundabout": load_json_file(PATH_CONFIGS + "config_roundabout.json")
+    "parking": load_json_file(PATH_CONFIGS + "config_parking.json")
 }

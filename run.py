@@ -17,13 +17,23 @@ from tools.tools_constants import (
 ### Main code ###
 #################
 
-highway = True
+highway = False
+parking = True
 racetrack = False
-roundabout = False
 
 if highway:
     env = gym.make("highway-v0", render_mode="rgb_array")
     env.unwrapped.configure(DICT_CONFIGS["highway"])
+    env.reset()
+    for _ in range(100):
+        action =  env.action_space.sample()
+        # action = env.action_type.actions_indexes["IDLE"]
+        obs, reward, done, truncated, info = env.step(action)
+        env.render()
+
+if parking:
+    env = gym.make("parking-v0", render_mode="rgb_array")
+    env.unwrapped.configure(DICT_CONFIGS["parking"])
     env.reset()
     for _ in range(100):
         action =  env.action_space.sample()
@@ -37,16 +47,6 @@ if racetrack:
     env.reset()
     for _ in range(100):
         action =  env.action_space.sample()
-        obs, reward, done, truncated, info = env.step(action)
-        env.render()
-
-if roundabout:
-    env = gym.make("roundabout-v0", render_mode="rgb_array")
-    env.unwrapped.configure(DICT_CONFIGS["roundabout"])
-    env.reset()
-    for _ in range(100):
-        action =  env.action_space.sample()
-        # action = env.action_type.actions_indexes["IDLE"]
         obs, reward, done, truncated, info = env.step(action)
         env.render()
 

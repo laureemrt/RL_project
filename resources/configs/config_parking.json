@@ -1,0 +1,28 @@
+{
+    "observation": {
+        "type": "KinematicsGoal",
+        "features": ["x", "y", "vx", "vy", "cos_h", "sin_h"],
+        "scales": [100, 100, 5, 5, 1, 1],
+        "normalize": false
+    },
+    "action": {
+        "type": "ContinuousAction"
+    },
+    "simulation_frequency": 15,
+    "policy_frequency": 5,
+    "screen_width": 600,
+    "screen_height": 300,
+    "centering_position": [0.5, 0.5],
+    "scaling": 7,
+    "show_trajectories": false,
+    "render_agent": true,
+    "offscreen_rendering": false,
+    "reward_weights": [1, 0.3, 0, 0, 0.02, 0.02],
+    "success_goal_reward": 3,
+    "collision_reward": -5,
+    "steering_range": 0.79,
+    "duration": 100,
+    "controlled_vehicles": 1,
+    "vehicles_count": 10,
+    "add_walls": true
+}
