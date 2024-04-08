@@ -2,7 +2,15 @@
     "observation": {
         "type": "Kinematics",
         "vehicles_count": 10,
-        "features": ["presence", "x", "y", "vx", "vy", "cos_h", "sin_h"],
+        "features": [
+            "presence",
+            "x",
+            "y",
+            "vx",
+            "vy",
+            "cos_h",
+            "sin_h"
+        ],
         "features_range": {
             "x": [-50, 50],
             "y": [-50, 50],
@@ -16,11 +24,11 @@
     "action": {
         "type": "DiscreteAction"
     },
-    "lanes_count": 4,
+    "lanes_count": 3,
     "vehicles_count": 15,
-    "duration": 30,
+    "duration": 100,
     "ego_spacing": 2,
-    "vehicles_density": 1,
+    "vehicles_density": 2,
     "initial_spacing": 0,
     "collision_reward": -3,
     "right_lane_reward": 0.75,  

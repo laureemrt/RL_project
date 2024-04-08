@@ -5,12 +5,14 @@ from stable_baselines3 import DQN
 from tools.tools_constants import (
     PATH_MODELS,
     PATH_RESULTS,
-    TRAIN_MODE
+    TRAIN_MODE,
+    DICT_CONFIGS
 )
 
 if __name__ == "__main__":
     # Create the environment
     env = gym.make("highway-fast-v0", render_mode="rgb_array")
+    env.unwrapped.configure(DICT_CONFIGS["highway"])
     obs, info = env.reset()
 
     # Create the model
@@ -27,19 +29,19 @@ if __name__ == "__main__":
         gradient_steps=1,
         target_update_interval=50,
         verbose=1,
-        tensorboard_log=PATH_MODELS + "highway_dqn/",
+        tensorboard_log=PATH_MODELS + "highway_dqn_2/",
     )
 
     # Train the model
     if TRAIN_MODE:
         model.learn(total_timesteps=int(2e4))
-        model.save(PATH_MODELS + "highway_dqn/model")
+        model.save(PATH_MODELS + "highway_dqn_2/model")
         del model
 
     # Run the trained model and record video
-    model = DQN.load(PATH_MODELS + "highway_dqn/model", env=env)
+    model = DQN.load(PATH_MODELS + "highway_dqn_2/model", env=env)
     env = RecordVideo(
-        env, video_folder=PATH_RESULTS + "highway_dqn/videos", episode_trigger=lambda e: True
+        env, video_folder=PATH_RESULTS + "highway_dqn_2/videos", episode_trigger=lambda e: True
     )
     env.unwrapped.set_record_video_wrapper(env)
     env.configure({"simulation_frequency": 50})  # Higher FPS for rendering

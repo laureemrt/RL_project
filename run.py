@@ -17,12 +17,12 @@ from tools.tools_constants import (
 ### Main code ###
 #################
 
-highway = False
-parking = True
+highway = True
+parking = False
 racetrack = False
 
 if highway:
-    env = gym.make("highway-v0", render_mode="rgb_array")
+    env = gym.make("highway-fast-v0", render_mode="rgb_array")
     env.unwrapped.configure(DICT_CONFIGS["highway"])
     env.reset()
     for _ in range(100):
