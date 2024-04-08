@@ -1,18 +1,31 @@
 {
     "observation": {
-        "type": "TimeToCollision"
+        "type": "Kinematics",
+        "absolute": true,
+        "features_range": {
+            "x": [-50, 50],
+            "y": [-50, 50],
+            "vx": [-5, 5],
+            "vy": [-5, 5]
+        }
     },
     "action": {
-        "type": "DiscreteMetaAction"
+        "type": "DiscreteMetaAction",
+        "target_speeds": [0, 8, 16]
     },
     "incoming_vehicle_destination": null,
-    "duration": 11, 
+    "collision_reward": -3,
+    "high_speed_reward": 0.5,
+    "right_lane_reward": 1,
+    "lane_change_reward": -0.05,
+    "screen_width": 600,
+    "screen_height": 600,
+    "centering_position": [0.5, 0.6],
+    "duration": 100,
+    "normalize_reward": true,
     "simulation_frequency": 15,
-    "policy_frequency": 1,
-    "other_vehicles_type": "highway_env.vehicle.behavior.IDMVehicle",
-    "screen_width": 600, 
-    "screen_height": 600, 
-    "centering_position": [0.5, 0.6],  
+    "policy_frequency": 5,
+    "other_vehicles_type": "highway_env.vehicle.behavior.IDMVehicle", 
     "scaling": 5.5,
     "show_trajectories": false,
     "render_agent": true,
