@@ -1,6 +1,7 @@
 # Imports
 import numpy as np
 import gymnasium as gym
+from gymnasium.wrappers import RecordVideo
 
 import matplotlib.pyplot as plt
 import json
@@ -55,8 +56,31 @@ if __name__ == "__main__":
     losses = train(env, agent, N_episodes, eval_every=50)
 
     plt.plot(losses)
+    #plt.show()
 
     # Evaluate the final policy
     rewards = eval_agent(agent, env, 20)
     print("")
     print("mean reward after training = ", np.mean(rewards))
+
+    # Run the trained model and record video
+    #model = DQN.load("highway_dqn/model", env=env)
+    env = RecordVideo(
+        env, video_folder="highway_dqn/videos", episode_trigger=lambda e: True
+    )
+    env.unwrapped.set_record_video_wrapper(env)
+    env.configure({"simulation_frequency": 50})  # Higher FPS for rendering
+    state, _ = env.reset()
+    for videos in range(5):
+        done = truncated = False
+        obs, info = env.reset()
+        while not (done or truncated):
+            action = agent.get_action(state, env)
+            next_state, reward, terminated, truncated, _ = env.step(action)
+            state = next_state
+
+            # Render
+            env.render()
+        
+    
+    env.close()
