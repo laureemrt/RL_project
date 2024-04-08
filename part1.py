@@ -9,7 +9,7 @@ import json
 
 from dqn_utils import *
 
-with open('./resources/config_highway.json', 'r', encoding='utf-8') as json_file:
+with open('./resources/configs/config_highway.json', 'r', encoding='utf-8') as json_file:
     config_highway=json.load(json_file)
 
 if __name__ == "__main__":
@@ -47,7 +47,7 @@ if __name__ == "__main__":
     # Create the model
     model = DQN(*arguments)
 
-    N_episodes = 10000
+    N_episodes = 10
 
     agent = DQN(*arguments)
 
@@ -66,7 +66,7 @@ if __name__ == "__main__":
     # Run the trained model and record video
     #model = DQN.load("highway_dqn/model", env=env)
     env = RecordVideo(
-        env, video_folder="highway_dqn/videos", episode_trigger=lambda e: True
+        env, video_folder="models/highway_dqn/videos", episode_trigger=lambda e: True
     )
     env.unwrapped.set_record_video_wrapper(env)
     env.configure({"simulation_frequency": 50})  # Higher FPS for rendering
