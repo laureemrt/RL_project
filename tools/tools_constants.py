@@ -16,13 +16,22 @@ from tools.tools_basis import (
 ### Constants ###
 #################
 
+### Paths ###
+
 PATH_RESULTS = "results/"
 PATH_RESOURCES = "resources/"
 PATH_MODELS = "models/"
-TRAIN_MODE = False
+
+### Configs ###
+
 PATH_CONFIGS = PATH_RESOURCES + "configs/"
 DICT_CONFIGS = {
     "highway": load_json_file(PATH_CONFIGS + "config_highway.json"),
-    "racetrack": load_json_file(PATH_CONFIGS + "config_racetrack.json"),
-    "parking": load_json_file(PATH_CONFIGS + "config_parking.json")
+    "parking": load_json_file(PATH_CONFIGS + "config_parking.json"),
+    "racetrack": load_json_file(PATH_CONFIGS + "config_racetrack.json")
 }
+
+### Training ###
+
+TRAIN_MODE = True
+NUMBER_VIDEOS_TO_GENERATE = 10

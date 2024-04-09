@@ -9,9 +9,12 @@
     - [Cloning the repository](#cloning-the-repository)
     - [Creation of a virtual environment](#creation-of-a-virtual-environment)
     - [Installation of the necessary librairies](#installation-of-the-necessary-librairies)
+    - [Modifications made in the `highway-env` library](#modifications-made-in-the-highway-env-library)
   - [Utilization](#utilization)
+    - [Part 1](#part-1)
+    - [Part 2](#part-2)
+    - [Part 3](#part-3)
   - [Architecture of the project](#architecture-of-the-project)
-  - [MODIFICATIONS EFFECTUEES DANS LE CODE SOURCE](#modifications-effectuees-dans-le-code-source)
 
 ## Introduction
 
@@ -58,23 +61,12 @@ To execute this software, you need several *Python* librairies, specified in the
 pip install -r requirements.txt
 ```
 
-## Utilization
+### Modifications made in the `highway-env` library
 
-DIRE COMMENT ON LANCE LE CODE
+We modified a few things in the `highway-env` library, because of bugs which have not been resolved in the latest release of the library.
 
-## Architecture of the project
+First of all, in the file `racetrack_env.py` which can be found at the directory `venv\lib\site-packages\highway_env\envs\`, we modified the last function creating the vehicles by:
 
-This repository is composed of the following folders:
-- `resources`
-- `tools`
-
-This repository also contains the following files:
-- `main.py`
-- `requirements.txt`
-
-## MODIFICATIONS EFFECTUEES DANS LE CODE SOURCE
-
-In the file `racetrack_env.py` which can be found at the directory `venv\lib\site-packages\highway_env\envs\`, we modified the last function creating the vehicles by:
 ```python
   def _make_vehicles(self) -> None:
       """
@@ -126,4 +118,37 @@ In the file `racetrack_env.py` which can be found at the directory `venv\lib\sit
 ```
 Indeed, the former function was not creating the correct number of vehicles we were specifying in the `config` file, so we changed the source code.
 
-There was also an error sometimes while running the racetrack configuration, without any change in the code. We found another bug in the source code, in the file `venv\lib\site-packages\highway_env\road\road.py` in the function `random_lane_index` line 254. We changed the line `_id = np_random.randint(len(self.graph[_from][_to]))` to `_id = np_random.integers(len(self.graph[_from][_to]))`.
+Secondly, there was also an error sometimes while running the racetrack configuration, without any change in the code. We found another bug in the source code, in the file `venv\lib\site-packages\highway_env\road\road.py` in the function `random_lane_index` line 254. We changed the line `_id = np_random.randint(len(self.graph[_from][_to]))` to `_id = np_random.integers(len(self.graph[_from][_to]))`.
+
+## Utilization
+
+### Part 1
+
+### Part 2
+
+### Part 3
+
+Part 3 of the project can be launched by running the following command:
+```bash
+python stable_baselines_ppo_racetrack.py`
+```
+
+Some configuration can be done before running the code:
+- in the file `tools/tools_constants.py`, the constant `TRAIN_MODE` may be set to True ou False, depending if you want to run a new training of the model. For the first time, it must be set to True, because you don't have the model weights saved in the directory `models`.
+- in the file `tools/tools_constants.py`, the constant `NUMBER_VIDEOS_TO_GENERATE` may be changed to change the number of videos you want to generate and save in the folder `results` after running the code.
+
+## Architecture of the project
+
+This repository is composed of the following folders:
+- `models`, storing the weights of the models trained for each part.
+- `resources`, containing the subfolder `configs` to store the different configuration json files.
+- `results`, containing the videos while executing one of the three parts.
+- `tools`, containing the following Python tools modules:
+  - `tools_basis.py`, defining basic tools functions.
+  - `tools_constants.py`, defining the main constants of the code, used for configuration.
+
+This repository also contains the following files:
+- `main.py`
+- `requirements.txt`
+- `stable_baselines_ppo_racetrack.py`, main Python file for Part 3.
+
