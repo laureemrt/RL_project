@@ -12,16 +12,11 @@ import os
 os.environ["SDL_VIDEODRIVER"] = "dummy"
 from IPython.display import clear_output
 import matplotlib.pyplot as plt
-import sys
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 import torch.optim as optim
 import numpy as np
 from copy import deepcopy
-import gymnasium as gym
-
-
 
 class RandomAgent: 
     def __init__(self, observation_space, action_space):
@@ -51,7 +46,7 @@ def eval_agent(agent, env, n_sim=10):
         reward_sum = 0
         done = False
         while not done: 
-            action = agent.get_action(state, epsilon=0)
+            action = agent.action_space.sample() # agent.get_action(state, epsilon=0)
             state, reward, terminated, truncated, _ = env_copy.step(action)
             reward_sum += reward
             done = terminated or truncated
@@ -68,9 +63,9 @@ def run_one_episode(env, agent, display=True):
 
     while not done:
         action = agent.action_space.sample()
-        print(f"Action: {action}")
+        # print(f"Action: {action}")
         state, reward, done, _, _ = display_env.step(action)
-        print(f"State: {state}, Reward: {reward}, Done: {done}")
+        # print(f"State: {state}, Reward: {reward}, Done: {done}")
         rewards += reward
         if display: 
             clear_output(wait=True)
@@ -87,7 +82,7 @@ def train(env, agent, N_episodes, eval_every=100, reward_threshold=300, n_eval=1
         done = False
         state, _ = env.reset()
         while not done: 
-            action = agent.get_action(state)
+            action = agent.action_space.sample() # agent.get_action(state)
 
             next_state, reward, terminated, truncated, _ = env.step(action)
             agent.update(state, action, reward, terminated, next_state)
@@ -117,9 +112,10 @@ class Net(nn.Module):
             nn.ReLU(),
             nn.Linear(hidden_size, n_actions),
         )
-        print("obs_size", obs_size, "hidden_size", hidden_size, "n_actions", n_actions)
+        # print("obs_size", obs_size, "hidden_size", hidden_size, "n_actions", n_actions)
 
     def forward(self, x):
+        # print("x", x.shape)
         return self.net(x)
     
 
@@ -168,3 +164,55 @@ class ReinforceSkeleton:
         )
 
         self.n_eps = 0
+
+
+class Reinforce(ReinforceSkeleton):
+    
+    def _gradient_returns(self, rewards, gamma):
+        """
+        Turns a list of rewards into the list of returns * gamma**t
+        """
+        G = 0
+        returns_list = []
+        T = len(rewards)
+        full_gamma = np.power(gamma, T)
+        for t in range(T):
+            G = rewards[T-t-1] + gamma * G
+            full_gamma /= gamma
+            returns_list.append(full_gamma * G)
+        return torch.tensor(returns_list[::-1], dtype=torch.float32)
+
+    def update(self, state, action, reward, terminated, next_state):
+        # print(state)
+        self.current_episode.append((
+            torch.tensor(state["observation"], dtype=torch.float32).unsqueeze(0),
+            torch.tensor([[action]], dtype=torch.float32),
+            torch.tensor([reward], dtype=torch.float32),
+        )
+        )
+        # print(self.current_episode)
+
+        if terminated: 
+            self.n_eps += 1
+
+            states, actions, rewards = tuple(
+                [torch.cat(data) for data in zip(*self.current_episode)]
+            )
+
+            current_episode_returns = self._gradient_returns(rewards, self.gamma)
+
+            unn_log_probs = self.policy_net.forward(states[0])
+   
+            # log_probs = unn_log_probs - torch.log(torch.sum(torch.exp(unn_log_probs), dim=-1)).unsqueeze(1)
+            log_probs = unn_log_probs - torch.log(torch.sum(torch.exp(unn_log_probs), dim=-1)).unsqueeze(0)
+            print(actions[0][0])
+            print(log_probs)
+            # print(log_probs.gather(1, actions[0][0]))
+
+            full_neg_score = - torch.dot(log_probs.gather(1, actions[0][0]).squeeze(), current_episode_returns).unsqueeze(0)#).sum()
+
+            self.current_episode = []
+
+            self.optimizer.zero_grad()
+            full_neg_score.backward()
+            self.optimizer.step()

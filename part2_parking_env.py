@@ -6,13 +6,16 @@ import matplotlib.pyplot as plt
 from tools.tools_constants import (
     DICT_CONFIGS
 )
-from tools.tools_part2 import (
+from tools.tools_reinforce import (
     run_one_episode,
     eval_agent,
-    RandomAgent,
-    ReinforceSkeleton
+    train,
+    Reinforce
 )
-
+from tools.tools_ddpg import (
+    DDPGAgent,
+    trainer
+)
 
 if __name__ == "__main__":
     # Create the environment
@@ -22,21 +25,44 @@ if __name__ == "__main__":
 
     # agent = RandomAgent(env.observation_space, env.action_space)
 
-
     action_space = env.action_space
-    print(action_space.shape[0])
     observation_space = env.observation_space
+
+    ### DDPG 
+
+    # max_episodes = 100
+    # max_steps = 500
+    # batch_size = 32
+
+    # gamma = 0.99
+    # tau = 1e-2
+    # buffer_maxlen = 100000
+    # critic_lr = 1e-3
+    # actor_lr = 1e-3
+
+    # agent = DDPGAgent(env, gamma, tau, buffer_maxlen, critic_lr, actor_lr)
+    # episode_rewards = trainer(env, agent, max_episodes, max_steps, batch_size,action_noise=0.1)
+
+    ### REINFORCE
     gamma = 0.99
     episode_batch_size = 1
     learning_rate = 1e-2
 
-    agent = ReinforceSkeleton(action_space,
+    agent = Reinforce(
+            action_space,
             observation_space,
             gamma,
             episode_batch_size,
-            learning_rate,)
-    
-    run_one_episode(env, agent, display=False)
+            learning_rate,
+            )
+    N_episodes = 300
+
+    print("mean reward before training = ", np.mean(eval_agent(agent, env, 200)))
+    # Run the training loop
+    train(env, agent, N_episodes, eval_every=50,)
+
+    # Evaluate the final policy
+    print("mean reward after training = ", np.mean(eval_agent(agent, env, 200)))
 
 
     # run_one_episode(env, agent, display=True)
