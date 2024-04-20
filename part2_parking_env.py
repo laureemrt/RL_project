@@ -17,7 +17,7 @@ from tools.tools_part2 import (
 if __name__ == "__main__":
     # Create the environment
     env = gym.make("parking-v0", render_mode="rgb_array")
-    env.unwrapped.configure(DICT_CONFIGS["racetrack"])
+    env.unwrapped.configure(DICT_CONFIGS["parking"])
     obs, info = env.reset()
 
     # agent = RandomAgent(env.observation_space, env.action_space)

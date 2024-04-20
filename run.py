@@ -18,16 +18,26 @@ from tools.tools_constants import (
 #################
 
 highway = True
+parking = False
 racetrack = False
-roundabout = False
 
 if highway:
-    env = gym.make("highway-v0", render_mode="rgb_array")
+    env = gym.make("highway-fast-v0", render_mode="rgb_array")
     env.unwrapped.configure(DICT_CONFIGS["highway"])
     env.reset()
     for _ in range(100):
         action =  env.action_space.sample()
         print(action)
+        # action = env.action_type.actions_indexes["IDLE"]
+        obs, reward, done, truncated, info = env.step(action)
+        env.render()
+
+if parking:
+    env = gym.make("parking-v0", render_mode="rgb_array")
+    env.unwrapped.configure(DICT_CONFIGS["parking"])
+    env.reset()
+    for _ in range(100):
+        action =  env.action_space.sample()
         # action = env.action_type.actions_indexes["IDLE"]
         obs, reward, done, truncated, info = env.step(action)
         env.render()
@@ -39,16 +49,6 @@ if racetrack:
     for _ in range(100):
         action =  env.action_space.sample()
         print(action)
-        obs, reward, done, truncated, info = env.step(action)
-        env.render()
-
-if roundabout:
-    env = gym.make("roundabout-v0", render_mode="rgb_array")
-    env.unwrapped.configure(DICT_CONFIGS["roundabout"])
-    env.reset()
-    for _ in range(100):
-        action =  env.action_space.sample()
-        # action = env.action_type.actions_indexes["IDLE"]
         obs, reward, done, truncated, info = env.step(action)
         env.render()
 
