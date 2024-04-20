@@ -19,7 +19,7 @@ from tools.tools_basis import (
 PATH_RESULTS = "results/"
 PATH_RESOURCES = "resources/"
 PATH_MODELS = "models/"
-TRAIN_MODE = False
+TRAIN_MODE = True
 PATH_CONFIGS = PATH_RESOURCES + "configs/"
 DICT_CONFIGS = {
     "highway": load_json_file(PATH_CONFIGS + "config_highway.json"),

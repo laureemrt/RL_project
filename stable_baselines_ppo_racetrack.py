@@ -52,6 +52,7 @@ if __name__ == "__main__":
         while not (done or truncated):
             # Predict
             action, _states = model.predict(obs, deterministic=True)
+            print(action)
             # Get reward
             obs, reward, done, truncated, info = env.step(action)
             # Render
