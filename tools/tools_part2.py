@@ -67,7 +67,7 @@ def run_one_episode(env, agent, display=True):
     rewards = 0
 
     while not done:
-        action = agent.action_space.sample() # agent.get_action(state, display_env) #epsilon=0)
+        action = agent.action_space.sample()
         print(f"Action: {action}")
         state, reward, done, _, _ = display_env.step(action)
         print(f"State: {state}, Reward: {reward}, Done: {done}")
@@ -150,13 +150,12 @@ class ReinforceSkeleton:
             unn_log_probs = self.policy_net.forward(state_tensor).numpy()[0]
             p = np.exp(unn_log_probs - np.min(unn_log_probs))
             p = p / np.sum(p)
-            return np.random.choice(np.arange(self.action_space.shape[0])) # , p=p
+            return np.random.choice(np.arange(self.action_space.shape[0]), p=p)
 
 
     def reset(self):
         hidden_size = 128 # 128
-
-        obs_size = 12 # self.observation_space.shape[0]
+        obs_size = self.observation_space["observation"].shape[0]
         n_actions = self.action_space.shape[0]
 
         self.policy_net = Net(obs_size, hidden_size, n_actions)
