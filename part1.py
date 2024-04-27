@@ -23,14 +23,14 @@ if __name__ == "__main__":
 
     gamma = 0.99
     batch_size = 32
-    buffer_capacity = 10_000
+    buffer_capacity = 15_000
     update_target_every = 32
 
-    epsilon_start = 0.9
-    decrease_epsilon_factor = 1000
-    epsilon_min = 0.05
+    epsilon_start = 1
+    epsilon_decay = 0.99975
+    epsilon_min = 0.001
 
-    learning_rate = 1e-2
+    learning_rate = 5e-4
 
     arguments = (action_space,
             observation_space,
@@ -39,48 +39,59 @@ if __name__ == "__main__":
             buffer_capacity,
             update_target_every, 
             epsilon_start, 
-            decrease_epsilon_factor, 
+            epsilon_decay, 
             epsilon_min,
             learning_rate,
         )
 
-    # Create the model
-    model = DQN(*arguments)
-
-    N_episodes = 10
+    N_episodes = 5_000
 
     agent = DQN(*arguments)
 
         
     # Run the training loop
-    losses = train(env, agent, N_episodes, eval_every=50)
+    losses, speed_avg = train(env, agent, N_episodes, eval_every=100)
 
     plt.plot(losses)
-    #plt.show()
+    plt.show()
 
-    # Evaluate the final policy
-    rewards = eval_agent(agent, env, 20)
-    print("")
-    print("mean reward after training = ", np.mean(rewards))
+    plt.plot(speed_avg)
+    plt.show()
 
     # Run the trained model and record video
-    #model = DQN.load("highway_dqn/model", env=env)
     env = RecordVideo(
         env, video_folder="models/highway_dqn/videos", episode_trigger=lambda e: True
     )
     env.unwrapped.set_record_video_wrapper(env)
     env.configure({"simulation_frequency": 50})  # Higher FPS for rendering
-    state, _ = env.reset()
     for videos in range(5):
         done = truncated = False
-        obs, info = env.reset()
+        state, info = env.reset()
+        time_step_reward = 0.01
+        total_reward = 0
         while not (done or truncated):
-            action = agent.get_action(state, env)
-            next_state, reward, terminated, truncated, _ = env.step(action)
-            state = next_state
+            state_tensor = torch.tensor([state], dtype=torch.float32).to(agent.device)
+            action = agent.get_action(state_tensor).item()
+            next_state, reward, done, truncated, info = env.step(action)
+
+            next_state = next_state.flatten()
+
+            reward, on_road_reward, speed_reward, collision_reward = agent.calculate_reward(env, info, reward)
+            reward += agent.n_steps * time_step_reward
+            total_reward += reward
+            terminated = done or truncated
+            agent.buffer.push(state, action, reward, next_state, terminated)
+
+            if on_road_reward > 0:
+                agent.update(terminated)
+                state = next_state
+                
+            if on_road_reward <= 0 or speed_reward <= 0 or collision_reward < 0:
+                break
+            if done or truncated:
+                break
 
             # Render
             env.render()
-        
-    
+
     env.close()
