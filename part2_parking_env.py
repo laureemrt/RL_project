@@ -2,6 +2,7 @@ import gymnasium as gym
 from gymnasium.wrappers import RecordVideo
 import numpy as np
 import matplotlib.pyplot as plt
+import time
 
 from tools.tools_constants import (
     DICT_CONFIGS
@@ -10,6 +11,8 @@ from tools.tools_reinforce import (
     run_one_episode,
     eval_agent,
     train,
+    Reinforce,
+    ReinforceBatch,
     Reinforce
 )
 from tools.tools_ddpg import (
@@ -22,8 +25,6 @@ if __name__ == "__main__":
     env = gym.make("parking-v0", render_mode="rgb_array")
     env.unwrapped.configure(DICT_CONFIGS["parking"])
     obs, info = env.reset()
-
-    # agent = RandomAgent(env.observation_space, env.action_space)
 
     action_space = env.action_space
     observation_space = env.observation_space
@@ -43,50 +44,41 @@ if __name__ == "__main__":
     # agent = DDPGAgent(env, gamma, tau, buffer_maxlen, critic_lr, actor_lr)
     # episode_rewards = trainer(env, agent, max_episodes, max_steps, batch_size,action_noise=0.1)
 
-    ### REINFORCE
-    gamma = 0.99
-    episode_batch_size = 1
-    learning_rate = 1e-2
+    ### REINFORCEBatch
 
-    agent = Reinforce(
-            action_space,
-            observation_space,
-            gamma,
-            episode_batch_size,
-            learning_rate,
-            )
-    N_episodes = 300
+    agent = ReinforceBatch(env.action_space, env.observation_space, gamma=0.99, episode_batch_size=32, learning_rate=0.0001)
+    start_time = time.time()
 
-    print("mean reward before training = ", np.mean(eval_agent(agent, env, 200)))
+    mean_reward_before = np.mean(eval_agent(agent, env, 200))
     # Run the training loop
-    train(env, agent, N_episodes, eval_every=50,)
+    train(env, agent, n_episodes=20000, eval_every=50, reward_threshold=200, n_eval=10)
+    end_time = time.time()
+
+    print("mean reward before training = ", mean_reward_before)
+    print(f"Training time: {(end_time - start_time)//60} min" )
 
     # Evaluate the final policy
     print("mean reward after training = ", np.mean(eval_agent(agent, env, 200)))
 
 
-    # run_one_episode(env, agent, display=True)
+    env = RecordVideo(
+        env, video_folder="models/parking_reinforce/videos", episode_trigger=lambda e: True
+    )
+    env.unwrapped.set_record_video_wrapper(env)
+    env.configure({"simulation_frequency": 50})  # Higher FPS for rendering
+    state, _ = env.reset()
+    for videos in range(5):
+        done = truncated = False
+        obs, info = env.reset()
+        while not (done or truncated):
+            action =  env.action_space.sample()
+            next_state, reward, terminated, truncated, info = env.step(action)
+            state = next_state
 
-    # print(f'Average over 5 runs : {np.mean(eval_agent(agent, env))}')
+            done = terminated or truncated or info['crashed'] == True
 
-    # Run the trained model and record video
-    #model = DQN.load("parking_dqn/model", env=env)
-    # env = RecordVideo(
-    #     env, video_folder="models/parking_dqn/videos", episode_trigger=lambda e: True
-    # )
-    # env.unwrapped.set_record_video_wrapper(env)
-    # env.configure({"simulation_frequency": 50})  # Higher FPS for rendering
-    # state, _ = env.reset()
-    # for videos in range(5):
-    #     done = truncated = False
-    #     obs, info = env.reset()
-    #     while not (done or truncated):
-    #         action = agent.get_action(state, env)
-    #         next_state, reward, terminated, truncated, _ = env.step(action)
-    #         state = next_state
-
-    #         # Render
-    #         env.render()
+            # Render
+            env.render()
         
     
-    # env.close()
+    env.close()
