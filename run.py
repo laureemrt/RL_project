@@ -27,6 +27,7 @@ if highway:
     env.reset()
     for _ in range(100):
         action =  env.action_space.sample()
+        print(action)
         # action = env.action_type.actions_indexes["IDLE"]
         obs, reward, done, truncated, info = env.step(action)
         env.render()
@@ -47,6 +48,7 @@ if racetrack:
     env.reset()
     for _ in range(100):
         action =  env.action_space.sample()
+        print(action)
         obs, reward, done, truncated, info = env.step(action)
         env.render()
 
