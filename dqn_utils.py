@@ -151,6 +151,10 @@ class DQN:
         speed_reward = info['speed']
         collision_reward = info['rewards']['collision_reward']
 
+        if on_road_reward > 0:
+            reward += on_road_reward
+        else :
+            reward = -50
 
         if float(speed_reward) <= 20 :
             reward = -100
