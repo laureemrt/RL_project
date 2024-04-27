@@ -122,7 +122,12 @@ Secondly, there was also an error sometimes while running the racetrack configur
 
 ## Utilization
 
-### Part 1
+### Part 
+
+Part 1 of the project can be launched by running the following command:
+```bash
+python part1.py`
+```
 
 ### Part 2
 
