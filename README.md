@@ -126,6 +126,11 @@ Secondly, there was also an error sometimes while running the racetrack configur
 
 ### Part 2
 
+Part 2 of the project can be launched by running the following command:
+```bash
+python part2_parking_env.py`
+```
+
 ### Part 3
 
 Part 3 of the project can be launched by running the following command:
